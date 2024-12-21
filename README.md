@@ -1,6 +1,6 @@
 # Balangay Nationwide Roadshow
 
-Welcome to the **Balangay Nationwide Roadshow Repository**! This repository contains the example codebases and supporting materials for all the lessons in the roadshow. These lessons are designed to introduce participants to Arweave and Autonomous Open (AO), helping them build innovative Web3 applications.
+Welcome to the **Balangay Nationwide Roadshow Repository**! This repository contains the example codebases and supporting materials for all the lessons in the roadshow. These lessons are designed to introduce participants to Arweave and AO, helping them build innovative Web3 applications.
 
 ---
 
