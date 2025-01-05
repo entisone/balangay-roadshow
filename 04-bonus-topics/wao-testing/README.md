@@ -2,6 +2,18 @@
 
 Visit [WAO](https://github.com/weavedb/wao) for full documentation.
 
+[NodeJS](https://nodejs.org) version 20+. (If you haven't yet installed it, check out [this page](https://nodejs.org/en/download/package-manager) to find instructions for your OS).
+
+### Quick Start
+
+Open a terminal. cd into `wao-test` directory and run the following commands:
+
+```bash
+cd wao-test
+yarn
+yarn test test/hello.js
+```
+
 ### Setting up a Project
 
 ```bash
