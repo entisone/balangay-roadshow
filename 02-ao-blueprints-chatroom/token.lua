@@ -55,11 +55,11 @@ local utils = {
 Variant = "0.0.3"
 
 -- token should be idempotent and not change previous state updates
-Denomination = Denomination or 12
-Balances = Balances or { [ao.id] = utils.toBalanceValue(10000 * 10 ^ Denomination) }
-TotalSupply = TotalSupply or utils.toBalanceValue(10000 * 10 ^ Denomination)
-Name = Name or 'Points Coin'
-Ticker = Ticker or 'PNTS'
+Denomination = Denomination or 16
+Balances = Balances or { [ao.id] = utils.toBalanceValue(1000000000 * 10 ^ Denomination) }
+TotalSupply = TotalSupply or utils.toBalanceValue(1000000000 * 10 ^ Denomination)
+Name = Name or 'Testnet ArPH'
+Ticker = Ticker or 'tArPH'
 Logo = Logo or 'SBCCXwwecBlDqRLUjb8dYABExTJXLieawf7m2aBJ-KY'
 
 --[[
@@ -87,7 +87,7 @@ end)
 Handlers.add('balance', "Balance", function(msg)
   local bal = '0'
 
-  -- If not Recipient is provided, then return the Senders balance
+  -- If no Recipient is provided, then return the Senders balance
   if (msg.Tags.Recipient) then
     if (Balances[msg.Tags.Recipient]) then
       bal = Balances[msg.Tags.Recipient]

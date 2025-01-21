@@ -1,4 +1,4 @@
-# Arweave and AO Fundamentals
+# Lesson 1: Arweave and AO Fundamentals
 
 [Presentation here](https://www.canva.com/design/DAGbJhZ1064/Nrr4I6i1Ppl-U5NAbYubkQ/edit?utm_content=DAGbJhZ1064&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 

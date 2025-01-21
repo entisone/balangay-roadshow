@@ -6,10 +6,10 @@ Visit [WAO](https://github.com/weavedb/wao) for full documentation.
 
 ### Quick Start
 
-Open a terminal. cd into `wao-test` directory and run the following commands:
+Open a terminal. cd into `wao-testing` directory and run the following commands:
 
 ```bash
-cd wao-test
+cd wao-testing
 yarn
 yarn test test/hello.js
 ```
@@ -17,7 +17,7 @@ yarn test test/hello.js
 ### Setting up a Project
 
 ```bash
-mkdir wao-test && cd wao-test
+mkdir wao-testing && cd wao-testing
 yarn init && yarn add wao
 ```
 
@@ -54,52 +54,51 @@ end)
 Write a simple test in `hello.js`
 
 ```js
-import assert from "assert"
-import { describe, it } from "node:test"
-import { acc, ArMem, connect, scheduler } from "wao/test"
+import assert from "assert";
+import { describe, it } from "node:test";
+import { acc, ArMem, connect, scheduler } from "wao/test";
 
-import fs from "fs"
-import path from "path"
-import { fileURLToPath } from "url"
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const mem = new ArMem()
-const ao = connect(mem)
+const mem = new ArMem();
+const ao = connect(mem);
 
-const signer = acc[0].signer
+const signer = acc[0].signer;
 
 const getContractSrcData = () => {
-  const contractPath = path.join(__dirname, "main.lua")
-  const contract = fs.readFileSync(contractPath, "utf8")
-  return contract
-}
+  const contractPath = path.join(__dirname, "main.lua");
+  const contract = fs.readFileSync(contractPath, "utf8");
+  return contract;
+};
 
 describe("Hello World", function () {
   it("should spawn a process and send messages", async () => {
-    const srcData = getContractSrcData()
+    const srcData = getContractSrcData();
     const pid = await ao.spawn({
       signer,
       scheduler,
       module: mem.modules.aos2_0_1,
-    })
+    });
 
     await ao.message({
       process: pid,
       tags: [{ name: "Action", value: "Eval" }],
       data: srcData,
       signer,
-    })
+    });
     const res = await ao.dryrun({
       process: pid,
       tags: [{ name: "Action", value: "Hello" }],
       signer,
-    })
-    assert.equal(res.Messages[0].Data, "Hello, World!")
-  })
-})
-
+    });
+    assert.equal(res.Messages[0].Data, "Hello, World!");
+  });
+});
 ```
 
 Note that generating random Arweave wallets for every test takes time and slows down your test executions, so Wao connect provides pre-generated accounts for your tests, which saves hours if you are to run your tests thousands of times.
@@ -111,4 +110,3 @@ Note that generating random Arweave wallets for every test takes time and slows 
 ```js
 yarn test test/hello.js
 ```
-

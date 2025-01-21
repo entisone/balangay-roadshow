@@ -1,58 +1,27 @@
+local bint = require('.bint')(256)
+
 Stakers = Stakers or {}
-Unstaking = Unstaking or {}
 
 -- Stake Action Handler
-Handlers.stake = function(msg)
-  local quantity = tonumber(msg.Tags.Quantity)
-  local delay = tonumber(msg.Tags.UnstakeDelay)
-  local height = tonumber(msg['Block-Height'])
-  assert(Balances[msg.From] and Balances[msg.From] >= quantity, "Insufficient balance to stake")
-  Balances[msg.From] = Balances[msg.From] - quantity
+Handlers.add("stake", "Stake", function(msg)
+  assert(type(msg.Quantity) == 'string', 'Quantity is required!')
+  local quantity = bint(msg.Quantity)
+  assert(quantity > bint(0), 'Quantity must be greater than 0')
+
+  Balances[msg.From] = bint(Balances[msg.From]) - quantity
   Stakers[msg.From] = Stakers[msg.From] or {}
-  Stakers[msg.From].amount = (Stakers[msg.From].amount or 0) + quantity
-  Stakers[msg.From].unstake_at = height + delay
-end
+  Stakers[msg.From].amount = bint(Stakers[msg.From].amount or 0) + quantity
+  msg.reply({ Data = "Staked " .. tostring(quantity) .. " tokens from " .. msg.From })
+end)
 
--- Unstake Action Handler
-Handlers.unstake = function(msg)
-  local quantity = tonumber(msg.Tags.Quantity)
+-- -- Unstake Action Handler
+Handlers.add("unstake", "Unstake", function(msg)
+  local quantity = bint(msg.Quantity)
   local stakerInfo = Stakers[msg.From]
-  assert(stakerInfo and stakerInfo.amount >= quantity, "Insufficient staked amount")
-  stakerInfo.amount = stakerInfo.amount - quantity
-  Unstaking[msg.From] = {
-      amount = quantity,
-      release_at = stakerInfo.unstake_at
-  }
-end
+  assert(stakerInfo and bint(stakerInfo.amount) >= quantity, "Insufficient staked amount")
+  stakerInfo.amount = bint(stakerInfo.amount) - quantity
+  Balances[msg.From] = bint(Balances[msg.From]) + quantity
+  Stakers[msg.From] = Stakers[msg.From] or {}
 
--- Finalization Handler
-local finalizationHandler = function(msg)
-  local currentHeight = tonumber(msg['Block-Height'])
-  -- Process unstaking
-  for address, unstakeInfo in pairs(Unstaking) do
-      if currentHeight >= unstakeInfo.release_at then
-          Balances[address] = (Balances[address] or 0) + unstakeInfo.amount
-          Unstaking[address] = nil
-      end
-  end
-
-end
-
--- wrap function to continue handler flow
-local function continue(fn)
-  return function (msg)
-    local result = fn(msg)
-    if (result) == -1 then
-      return 1
-    end
-    return result
-  end
-end
-
--- Registering Handlers
-Handlers.add("stake",
-  continue(Handlers.utils.hasMatchingTag("Action", "Stake")), Handlers.stake)
-Handlers.add("unstake",
-  continue(Handlers.utils.hasMatchingTag("Action", "Unstake")), Handlers.unstake)
--- Finalization handler should be called for every message
-Handlers.add("finalize", function (msg) return -1 end, finalizationHandler)
+  msg.reply({ Data = "Unstaked " .. quantity .. " tokens to " .. msg.From })
+end)
