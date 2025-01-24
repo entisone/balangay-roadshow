@@ -1,195 +1,178 @@
-# Lesson 3: AOConnect and Turbo-SDK
+# Lesson 3: Frontend Integration with AO Connect
 
 ## 📖 Introduction
 
-Welcome to Lesson 3! In this lesson, we'll explore how to build a **web interface** for our AO chat room using [ArNext](https://github.com/weavedb/arnext) and the Turbo-SDK. You'll learn how to create a decentralized frontend that connects to your AO processes and deploy it permanently to the Arweave network.
+Welcome to Lesson 3! In this lesson, we'll learn how to integrate our AO chatroom with a modern web frontend. By the end of this lesson, you'll understand:
 
----
+- How to connect Arweave wallets to your frontend
+- Methods for sending messages to AO processes using aoconnect
+- Techniques for fetching real-time updates using dryrun
+- Patterns for integrating AO processes with frontend code
 
-## 🏗️ Getting Started
+## 🛠️ Technology Stack
 
-### 1. Create a New ArNext Project
+### Core Libraries
 
-ArNext is a NextJS-based framework that allows you to deploy the same codebase on both Vercel and Arweave. This enables your permaapp to have cloud-powered optimizations while maintaining censorship resistance.
+1. **React.js / Next.js with ArNext**
 
-```bash
-npx create-arnext-app my-ao-chat
-cd my-ao-chat
-```
+   - Built on Next.js for optimal performance
+   - Uses [ArNext](https://github.com/weavedb/arnext/) for deploying to permaweb
+   - Enables both cloud and permaweb deployments from the same codebase
 
-### 2. Install Dependencies
+2. **@tanstack/react-query**
 
-```bash
-npm install @permaweb/aoconnect @turbo-sdk/core
-```
+   - Powerful data synchronization
+   - Cache management
+   - Optimistic updates
+   - Real-time data fetching
 
-### 3. Create Basic Components
+3. **@permaweb/aoconnect**
+   - Core communication with AO processes
+   - Wallet integration
+   - Message handling
+   - State querying
 
-Create these essential components for your chat interface:
+## 🔌 AOConnect Overview
 
-```tsx
-// components/ConnectWallet.tsx
-import { useState } from "react";
-
-export function ConnectWallet({ onConnect }) {
-  const [wallet, setWallet] = useState(null);
-
-  const connectWallet = async () => {
-    if (window.arweaveWallet) {
-      await window.arweaveWallet.connect(["SIGN_TRANSACTION"]);
-      setWallet(window.arweaveWallet);
-      onConnect(window.arweaveWallet);
-    }
-  };
-
-  return (
-    <button onClick={connectWallet}>
-      {wallet ? "Connected" : "Connect Wallet"}
-    </button>
-  );
-}
-```
-
-```tsx
-// components/ChatMessage.tsx
-export function ChatMessage({ message, sender }) {
-  return (
-    <div className="message">
-      <span className="sender">{sender}:</span>
-      <p>{message}</p>
-    </div>
-  );
-}
-```
-
----
-
-## ⚡ Connecting to AO Processes
-
-### Setting up AOConnect
-
-First, [install AOConnect](https://cookbook_ao.arweave.dev/guides/aoconnect/installing-connect.html) in your project:
+The [@permaweb/aoconnect](https://cookbook_ao.arweave.dev/guides/aoconnect/aoconnect.html) library provides essential functions for interacting with AO processes:
 
 ```typescript
-// hooks/useAOChat.ts
-import { message, createDataItemSigner } from "@permaweb/aoconnect";
-
-export function useAOChat(processId: string) {
-  const sendMessage = async (wallet, content: string) => {
-    try {
-      const response = await message({
-        process: processId,
-        tags: [{ name: "Action", value: "Broadcast" }],
-        signer: createDataItemSigner(wallet),
-        data: content,
-      });
-      return response;
-    } catch (error) {
-      console.error("Failed to send message:", error);
-      throw error;
-    }
-  };
-
-  return { sendMessage };
-}
+import {
+  createDataItemSigner, // Create wallet signer
+  message, // Send messages to processes
+  result, // Get message results
+  dryrun, // Query process state
+} from "@permaweb/aoconnect";
 ```
 
-### Implementing Chat Interface
+### Key Functions
 
-```tsx
-// pages/index.tsx
-import { useState } from "react";
-import { ConnectWallet } from "../components/ConnectWallet";
-import { ChatMessage } from "../components/ChatMessage";
-import { useAOChat } from "../hooks/useAOChat";
+1. **message()**: Sends actions to processes
 
-export default function ChatRoom() {
-  const [wallet, setWallet] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const { sendMessage } = useAOChat("YOUR_PROCESS_ID");
-
-  const handleSend = async () => {
-    if (!input.trim()) return;
-
-    try {
-      await sendMessage(wallet, input);
-      setInput("");
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    }
-  };
-
-  return (
-    <div className="chat-room">
-      <ConnectWallet onConnect={setWallet} />
-      <div className="messages">
-        {messages.map((msg, i) => (
-          <ChatMessage key={i} {...msg} />
-        ))}
-      </div>
-      <div className="input-area">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
-        />
-        <button onClick={handleSend}>Send</button>
-      </div>
-    </div>
-  );
-}
+```typescript
+const response = await message({
+  process: AO.chatroom,
+  signer: createDataItemSigner(window.arweaveWallet),
+  tags: [{ name: "Action", value: "Broadcast" }],
+});
 ```
 
----
+2. **dryrun()**: Queries current state
 
-## 🛠️ Hands-on Activities
-
-### Activity 1: Connect to Your Chat Process
-
-1. Get your process ID from Lesson 2
-2. Update the `useAOChat` hook with your process ID
-3. Implement message sending functionality
-4. Test sending and receiving messages
-
-### Activity 2: Add Real-time Updates
-
-1. Implement message monitoring using AOConnect
-2. Update the UI when new messages arrive
-3. Add loading states and error handling
-
----
-
-## 🚀 Deployment
-
-### Deploy to Vercel
-
-```bash
-vercel --prod
+```typescript
+const state = await dryrun({
+  process: AO.chatroom,
+  tags: [{ name: "Action", value: "ReadMessages" }],
+});
 ```
 
-### Deploy to Arweave
+## 🎣 Custom React Hooks
 
-```bash
-yarn arweave
-yarn deploy -w WALLET_PATH
+Our application uses several custom hooks to manage different aspects of the chat:
+
+1. **useWallet**
+
+   - Manages wallet connection state
+   - Handles connection/disconnection
+   - Provides user address
+
+2. **useRegistration**
+
+   - Handles user registration flow
+   - Checks registration status
+   - Manages registration state
+
+3. **useReadMessages**
+
+   - Fetches chat messages
+   - Handles real-time updates
+   - Manages message cache
+
+4. **useSendMessage**
+   - Sends new messages
+   - Handles message delivery status
+   - Manages optimistic updates
+
+## 🎯 Activities
+
+### Activity 1: Implement Message Sending
+
+In `useSendMessage.tsx`, complete the `sendMessage` function:
+
+```typescript
+const sendMessage = async (payload: Payload) => {
+  // TODO: Implement message sending
+  // 1. Use message() to send to AO process
+  // 2. Add "Broadcast" action tag
+  // 3. Include payload.message as data
+  // 4. Get and parse result
+};
 ```
 
-Or using Turbo:
+**Implementation Steps:**
 
-```bash
-yarn deploy:turbo -w WALLET_PATH
+1. Create a message signer using `createDataItemSigner`
+2. Send message using the `message()` function
+3. Add appropriate tags for the Broadcast action
+4. Get result using `result()` function
+5. Parse and return the response
+
+**Reference:** Look at the `register` function in `useRegistration.tsx`
+
+### Activity 2: Implement Registration Check
+
+In `useRegistration.tsx`, complete the `checkRegistration` function:
+
+```typescript
+const checkRegistration = async () => {
+  // TODO: Implement registration check
+  // 1. Use dryrun() to query registration
+  // 2. Add CheckRegistration action tag
+  // 3. Parse response (0 or 1)
+};
 ```
 
----
+**Implementation Steps:**
 
-## Expected Outcome
+1. Create a data item signer
+2. Use `dryrun()` to query the process
+3. Add appropriate tags for CheckRegistration
+4. Parse the response (returns "0" or "1")
 
-By completing this lesson, you will have:
+**Reference:** Look at the `readMessages` function in `useReadMessages.tsx`
 
-- Created a permanent web application using ArNext
-- Connected your frontend to AO processes using AOConnect
-- Implemented real-time messaging capabilities
-- Deployed your dApp to both Vercel and the permaweb
+## 🧪 Testing Your Implementation
 
-Let us know if you need any help during the activities. Happy coding! 🚀
+1. **Registration Flow**
+
+   ```typescript
+   const { register, checkRegistration } = useRegistration();
+   await register.mutateAsync();
+   const status = await checkRegistration.mutateAsync();
+   ```
+
+2. **Sending Messages**
+
+   ```typescript
+   const { mutate: sendMessage } = useSendMessage();
+   sendMessage({ message: "Hello AO!" });
+   ```
+
+3. **Reading Messages**
+   ```typescript
+   const { data: messages } = useReadMessages();
+   console.log(messages);
+   ```
+
+## 🚀 Next Steps
+
+After completing these activities, you'll have a fully functional decentralized chat application that can be deployed both on traditional cloud platforms and the permaweb.
+
+Consider these enhancements:
+
+- Add message encryption
+- Implement private messaging
+- Add file sharing capabilities
+- Create chat rooms
+
+Happy coding! 🎉
