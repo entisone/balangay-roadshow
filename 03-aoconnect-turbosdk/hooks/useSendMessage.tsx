@@ -8,19 +8,7 @@ interface Payload {
 }
 
 const sendMessage = async (payload: Payload) => {
-  const sendMessageToProcess = await message({
-    process: AO.chatroom,
-    signer: createDataItemSigner(window.arweaveWallet),
-    tags: [{ name: "Action", value: "Broadcast" }],
-    data: payload.message,
-  });
-
-  const sendMessageResponse = await result({
-    message: sendMessageToProcess,
-    process: AO.chatroom,
-  }).then((res) => JSON.parse(res.Messages[0].Data) as string);
-
-  return sendMessageResponse;
+  // TODO: Finish the function. Hints on the useRegistration hook!
 };
 
 export const useSendMessage = () => {

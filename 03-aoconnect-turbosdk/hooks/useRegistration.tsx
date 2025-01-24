@@ -24,18 +24,7 @@ const register = async () => {
 };
 
 const checkRegistration = async () => {
-  const checkRegistrationToProcess = await message({
-    process: AO.chatroom,
-    signer: createDataItemSigner(window.arweaveWallet),
-    tags: [{ name: "Action", value: "CheckRegistration" }],
-  });
-
-  const checkRegistrationResponse = await result({
-    message: checkRegistrationToProcess,
-    process: AO.chatroom,
-  }).then((res) => JSON.parse(res.Messages[0].Data) as number);
-
-  return checkRegistrationResponse;
+  // TODO: Finish the function. Hints above on the other one!
 };
 
 export const useRegistration = () => {
