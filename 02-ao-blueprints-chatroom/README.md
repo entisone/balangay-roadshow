@@ -50,23 +50,13 @@ In AO development, Lua scripts define smart contract logic that runs on the netw
      end
      ```
 
-5. **Finalization Logic**
-   - Optional logic executed at the end of processing a message, such as cleaning up expired entries.
-   - Example:
-     ```lua
-     Handlers.add("finalize", function(msg)
-         -- Cleanup operations
-         return -1  -- Continue execution
-     end)
-     ```
-
 ---
 
 ## ⚙️ Typical AO Process / Smart Contract Structure
 
 An AO process (smart contract) generally follows this structure:
 
-```lua
+````lua
 -- 1. Import Dependencies
 local json = require("json")  -- Handling JSON data
 local bint = require(".bint")(256)  -- Large number support
@@ -98,13 +88,6 @@ if not Balances[ao.id] then
     Balances[ao.id] = 1000000  -- Initial token balance for contract owner
 end
 
--- 6. Finalization Handler (Optional)
-Handlers.add("finalize", function(msg)
-    -- Process any pending tasks
-    return -1  -- Ensures handler continues executing
-end)
-```
-
 ## ⚡ Composition of a Handler
 
 In AO, **handlers** are the core building blocks of smart contracts. They define how a process responds to incoming messages and execute specific logic based on the message's content.
@@ -115,7 +98,7 @@ An AO handler follows the general format:
 
 ```lua
 Handlers.add(name, pattern, handle)
-```
+````
 
 ## ⚡ Composition of a Handler
 
@@ -182,9 +165,9 @@ Full docs on Handlers: [Handlers](https://cookbook_ao.arweave.dev/references/han
 
 ## 🛠️ Hands-on Activities
 
-### Activity 1: Establish Token-Gating on the Chat Room Through Staking
+### Activity 1: Establish Gating on the Chat Room
 
-In this activity, you'll implement **token-gated access** to the chat room. Only users who have staked the required amount of tokens will be able to register and participate.
+In this activity, you'll implement **gated access** to the chat room. Only users who have registered will be able to register and participate.
 
 #### Steps:
 
@@ -192,24 +175,25 @@ In this activity, you'll implement **token-gated access** to the chat room. Only
 
    - Implement logic to ensure:
      - Users cannot register more than once.
-     - Only staked users can register.
 
-2. **Stake tokens before registering:**
-   - Use the following command to stake tokens before registration:
+2. **Register to the chat room:**
+
+   ```lua
+   Send({ Target = "<chatroom_process_id>", Action = "Register" }).receive().Data
+   ```
+
+3. **Verify registration:**
+
+   - Check your registration:
      ```lua
-     Send({ Target = "<staking_process_id>", Action = "Stake", Quantity = "50" })
+     Send({ Target = "<chatroom_process_id>", Action = "CheckRegistration" }).receive().Data
      ```
-3. **Register to the chat room after staking:**
 
-   - Once staking is confirmed, register to the chat room:
-     ```lua
-     Send({ Target = "<chatroom_process_id>", Action = "Register" }).receive().Data
-     ```
+4. **Send a message:**
 
-4. **Verify members:**
-   - List all registered members:
+   - Check your registration:
      ```lua
-     Send({ Target = "<chatroom_process_id>", Action = "ListMembers" }).receive().Data
+     Send({ Target = "<chatroom_process_id>", Action = "Broadcast", Data = "<your_message>" }).receive().Data
      ```
 
 ---
@@ -253,8 +237,7 @@ To make the chatroom more engaging, participants will earn **points for sending 
 
 By completing these activities, participants will:
 
-- Understand how to implement **token-gated access** to a decentralized chat room.
-- Ensure **only staked users can register and participate** in the chatroom.
+- Understand how to implement a simple **gated access** to a decentralized chat room.
 - Earn points for message activity and track engagement using leaderboard commands.
 - Gain hands-on experience interacting with AO smart contracts via commands.
 

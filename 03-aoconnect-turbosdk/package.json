@@ -14,6 +14,8 @@
     "test": "mocha"
   },
   "dependencies": {
+    "@permaweb/aoconnect": "^0.0.63",
+    "@tanstack/react-query": "^5.64.2",
     "arnext": "^0.1.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

@@ -2,6 +2,7 @@ import { ArNext } from "arnext";
 import { WalletProvider } from "@/providers/wallet-provider";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { ClientProvider } from "@/providers/client-provider";
 
 export default function App({ children, ...props }) {
   return (
@@ -11,9 +12,11 @@ export default function App({ children, ...props }) {
       enableSystem
       disableTransitionOnChange
     >
-      <WalletProvider>
-        <ArNext {...props}>{children}</ArNext>
-      </WalletProvider>
+      <ClientProvider>
+        <WalletProvider>
+          <ArNext {...props}>{children}</ArNext>
+        </WalletProvider>
+      </ClientProvider>
     </ThemeProvider>
   );
 }

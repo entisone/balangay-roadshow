@@ -1,38 +1,57 @@
 import { useState, useRef, useEffect } from "react";
 import { ConnectWalletButton } from "@/components/connect-wallet";
 import { useWallet } from "@/providers/wallet-provider";
+import { useReadMessages } from "@/hooks/useReadMessages";
+import { useSendMessage } from "@/hooks/useSendMessage";
+import { cn } from "@/lib/utils";
+import { useRegistration } from "@/hooks/useRegistration";
 
 export default function Home() {
-  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const { isConnected, userAddress } = useWallet();
   const messagesEndRef = useRef(null);
+  const {
+    checkRegistration: {
+      data: isRegistered,
+      mutate: checkRegistration,
+      isPending: isCheckingRegistration,
+    },
+    register: { mutate: register },
+  } = useRegistration();
+  const { data: messages } = useReadMessages();
+  const { mutate: sendMessage, isPending: isSendingMessage } = useSendMessage();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    try {
+      sendMessage({ message: input });
+      setInput("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
+  };
+
+  const handleRegister = async () => {
+    await register();
+    await checkRegistration();
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
-
-    try {
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: userAddress,
-          content: input,
-          timestamp: Date.now(),
-        },
-      ]);
-      setInput("");
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    }
-  };
+  useEffect(() => {
+    (async () => {
+      if (isConnected) {
+        await checkRegistration();
+      }
+    })();
+  }, [isConnected]);
 
   return (
     <div className="flex flex-col p-6 h-screen text-gray-800 bg-gradient-to-b from-gray-100 to-white">
@@ -41,12 +60,37 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
           AO Chat
         </h1>
-        <ConnectWalletButton />
+
+        <div className="flex gap-4">
+          {isRegistered === 0 && (
+            <button
+              className="px-4 py-2 text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg hover:opacity-90 disabled:opacity-50"
+              onClick={handleRegister}
+              disabled={!isConnected}
+            >
+              Register
+            </button>
+          )}
+
+          <ConnectWalletButton />
+        </div>
       </div>
 
       {/* Chat Container */}
       <div className="overflow-y-auto flex-1 p-6 mb-6 rounded-lg border border-gray-200 backdrop-blur-sm bg-white/50">
-        {messages.length === 0 ? (
+        {!isConnected ? (
+          <div className="flex justify-center items-center h-full text-gray-500">
+            Please connect your wallet.
+          </div>
+        ) : isCheckingRegistration ? (
+          <div className="flex justify-center items-center h-full text-gray-500">
+            Checking account status...
+          </div>
+        ) : !isRegistered ? (
+          <div className="flex justify-center items-center h-full text-gray-500">
+            You are not registered! Please register to start chatting.
+          </div>
+        ) : !messages || messages.length === 0 ? (
           <div className="flex justify-center items-center h-full text-gray-500">
             No messages yet. Start the conversation!
           </div>
@@ -64,17 +108,24 @@ export default function Home() {
                     msg.sender === userAddress ? "bg-blue-500" : "bg-gray-200"
                   } rounded-2xl px-4 py-3`}
                 >
-                  <div className="mb-1 text-sm text-gray-300">
+                  <div
+                    className={cn(
+                      "mb-1 text-sm ",
+                      msg.sender === userAddress
+                        ? "text-gray-300"
+                        : "text-gray-500"
+                    )}
+                  >
                     {msg.sender.slice(0, 8)}:
                   </div>
                   <p
                     className={
                       msg.sender === userAddress
                         ? "text-white"
-                        : "text-gray-200"
+                        : "text-gray-800"
                     }
                   >
-                    {msg.content}
+                    {msg.message}
                   </p>
                 </div>
               </div>
@@ -99,9 +150,9 @@ export default function Home() {
         <button
           className="px-6 py-3 font-medium text-white bg-blue-500 rounded-lg transition-colors duration-200 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
           onClick={handleSend}
-          disabled={!isConnected}
+          disabled={!isConnected || isSendingMessage}
         >
-          Send
+          {isSendingMessage ? "Sending..." : "Send"}
         </button>
       </div>
     </div>
