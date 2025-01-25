@@ -56,7 +56,7 @@ In AO development, Lua scripts define smart contract logic that runs on the netw
 
 An AO process (smart contract) generally follows this structure:
 
-````lua
+```lua
 -- 1. Import Dependencies
 local json = require("json")  -- Handling JSON data
 local bint = require(".bint")(256)  -- Large number support
@@ -87,6 +87,7 @@ end)
 if not Balances[ao.id] then
     Balances[ao.id] = 1000000  -- Initial token balance for contract owner
 end
+```
 
 ## ⚡ Composition of a Handler
 
@@ -163,6 +164,8 @@ Full docs on Handlers: [Handlers](https://cookbook_ao.arweave.dev/references/han
      - Performing operations such as updating balances.
      - Sending replies or further actions.
 
+````
+
 ## 🔑 Process Configuration
 
 Before starting the activities, make sure to either:
@@ -172,14 +175,14 @@ Before starting the activities, make sure to either:
    NEXT_PROCESS_PROCESS_TOKEN=your_token_process_id
    NEXT_PROCESS_PROCESS_STAKING=your_staking_process_id
    NEXT_PROCESS_PROCESS_CHATROOM=your_chatroom_process_id
-   ```
+````
 
 2. Or directly update the process IDs in `03-aoconnect-turbosdk/lib/processes.ts`:
    ```typescript
    export const AO = {
      token: "your_token_process_id",
      staking: "your_staking_process_id",
-     chatroom: "your_chatroom_process_id"
+     chatroom: "your_chatroom_process_id",
    };
    ```
 
@@ -268,4 +271,7 @@ By completing these activities, participants will:
 ---
 
 Let us know if you need any help during the activity. Happy coding! 🚀
-````
+
+```
+
+```
