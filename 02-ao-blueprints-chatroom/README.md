@@ -98,7 +98,7 @@ An AO handler follows the general format:
 
 ```lua
 Handlers.add(name, pattern, handle)
-````
+```
 
 ## ⚡ Composition of a Handler
 
@@ -162,6 +162,30 @@ Full docs on Handlers: [Handlers](https://cookbook_ao.arweave.dev/references/han
      - Validating inputs with `assert()`.
      - Performing operations such as updating balances.
      - Sending replies or further actions.
+
+## 🔑 Process Configuration
+
+Before starting the activities, make sure to either:
+
+1. Update your `.env` file with your process IDs:
+   ```env
+   NEXT_PROCESS_PROCESS_TOKEN=your_token_process_id
+   NEXT_PROCESS_PROCESS_STAKING=your_staking_process_id
+   NEXT_PROCESS_PROCESS_CHATROOM=your_chatroom_process_id
+   ```
+
+2. Or directly update the process IDs in `03-aoconnect-turbosdk/lib/processes.ts`:
+   ```typescript
+   export const AO = {
+     token: "your_token_process_id",
+     staking: "your_staking_process_id",
+     chatroom: "your_chatroom_process_id"
+   };
+   ```
+
+This ensures your commands target the correct processes when interacting with the chat room.
+
+---
 
 ## 🛠️ Hands-on Activities
 
@@ -244,3 +268,4 @@ By completing these activities, participants will:
 ---
 
 Let us know if you need any help during the activity. Happy coding! 🚀
+````
