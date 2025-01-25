@@ -2,7 +2,7 @@
 
 ## 📖 Introduction
 
-Welcome to Lesson 2! In this lesson, we will explore how to create a **token-gated chat room** using AO (Autonomous Open) technology. You will learn how to utilize key blueprints such as **token management**, **staking**, and **chat room processes** to build decentralized applications on Arweave.
+Welcome to Lesson 2! In this lesson, we will explore how to create a **gated chat room** using AO (Actor-Oriented) technology. You will learn how to utilize key blueprints such as **token management**, **staking**, and **chat room processes** to build decentralized applications on Arweave.
 
 ---
 
@@ -56,7 +56,7 @@ In AO development, Lua scripts define smart contract logic that runs on the netw
 
 An AO process (smart contract) generally follows this structure:
 
-````lua
+```lua
 -- 1. Import Dependencies
 local json = require("json")  -- Handling JSON data
 local bint = require(".bint")(256)  -- Large number support
@@ -87,6 +87,7 @@ end)
 if not Balances[ao.id] then
     Balances[ao.id] = 1000000  -- Initial token balance for contract owner
 end
+```
 
 ## ⚡ Composition of a Handler
 
@@ -168,6 +169,7 @@ Full docs on Handlers: [Handlers](https://cookbook_ao.arweave.dev/references/han
 Before starting the activities, make sure to either:
 
 1. Update your `.env` file with your process IDs:
+
    ```env
    NEXT_PROCESS_PROCESS_TOKEN=your_token_process_id
    NEXT_PROCESS_PROCESS_STAKING=your_staking_process_id
@@ -179,7 +181,7 @@ Before starting the activities, make sure to either:
    export const AO = {
      token: "your_token_process_id",
      staking: "your_staking_process_id",
-     chatroom: "your_chatroom_process_id"
+     chatroom: "your_chatroom_process_id",
    };
    ```
 
@@ -208,17 +210,15 @@ In this activity, you'll implement **gated access** to the chat room. Only users
 
 3. **Verify registration:**
 
-   - Check your registration:
-     ```lua
-     Send({ Target = "<chatroom_process_id>", Action = "CheckRegistration" }).receive().Data
-     ```
+   ```lua
+   Send({ Target = "<chatroom_process_id>", Action = "CheckRegistration" }).receive().Data
+   ```
 
 4. **Send a message:**
 
-   - Check your registration:
-     ```lua
-     Send({ Target = "<chatroom_process_id>", Action = "Broadcast", Data = "<your_message>" }).receive().Data
-     ```
+   ```lua
+   Send({ Target = "<chatroom_process_id>", Action = "Broadcast", Data = "<your_message>" }).receive().Data
+   ```
 
 ---
 
@@ -268,4 +268,3 @@ By completing these activities, participants will:
 ---
 
 Let us know if you need any help during the activity. Happy coding! 🚀
-````
