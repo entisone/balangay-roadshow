@@ -2,7 +2,7 @@
 
 ## 📖 Introduction
 
-Welcome to Lesson 2! In this lesson, we will explore how to create a **token-gated chat room** using AO (Autonomous Open) technology. You will learn how to utilize key blueprints such as **token management**, **staking**, and **chat room processes** to build decentralized applications on Arweave.
+Welcome to Lesson 2! In this lesson, we will explore how to create a **gated chat room** using AO (Actor-Oriented) technology. You will learn how to utilize key blueprints such as **token management**, **staking**, and **chat room processes** to build decentralized applications on Arweave.
 
 ---
 
