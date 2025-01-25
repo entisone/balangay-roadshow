@@ -164,18 +164,17 @@ Full docs on Handlers: [Handlers](https://cookbook_ao.arweave.dev/references/han
      - Performing operations such as updating balances.
      - Sending replies or further actions.
 
-````
-
 ## 🔑 Process Configuration
 
 Before starting the activities, make sure to either:
 
 1. Update your `.env` file with your process IDs:
+
    ```env
    NEXT_PROCESS_PROCESS_TOKEN=your_token_process_id
    NEXT_PROCESS_PROCESS_STAKING=your_staking_process_id
    NEXT_PROCESS_PROCESS_CHATROOM=your_chatroom_process_id
-````
+   ```
 
 2. Or directly update the process IDs in `03-aoconnect-turbosdk/lib/processes.ts`:
    ```typescript
@@ -211,17 +210,15 @@ In this activity, you'll implement **gated access** to the chat room. Only users
 
 3. **Verify registration:**
 
-   - Check your registration:
-     ```lua
-     Send({ Target = "<chatroom_process_id>", Action = "CheckRegistration" }).receive().Data
-     ```
+   ```lua
+   Send({ Target = "<chatroom_process_id>", Action = "CheckRegistration" }).receive().Data
+   ```
 
 4. **Send a message:**
 
-   - Check your registration:
-     ```lua
-     Send({ Target = "<chatroom_process_id>", Action = "Broadcast", Data = "<your_message>" }).receive().Data
-     ```
+   ```lua
+   Send({ Target = "<chatroom_process_id>", Action = "Broadcast", Data = "<your_message>" }).receive().Data
+   ```
 
 ---
 
@@ -271,7 +268,3 @@ By completing these activities, participants will:
 ---
 
 Let us know if you need any help during the activity. Happy coding! 🚀
-
-```
-
-```
