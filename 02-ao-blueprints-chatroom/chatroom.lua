@@ -8,11 +8,18 @@ Handlers.add(
   "Register",
   "Register",
   function (msg)
-      -- TODO: Add a check to see if the user is already registered
+      -- Check if the user is already registered using ao.id
+      for _, member in ipairs(Members) do
+          if member.ao.id == msg.From.ao.id then
+              msg.reply({ Data = "You are already registered." })
+              return
+          end
+      end
 
-    table.insert(Members, msg.From)
-    print(msg.From .. " Registered")
-    msg.reply({ Data = "Registered." })
+      -- Add the user to the Members list
+      table.insert(Members, msg.From)
+      print(msg.From.ao.id .. " Registered")
+      msg.reply({ Data = "Registered." })
   end
 )
 
